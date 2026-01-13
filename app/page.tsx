@@ -12,9 +12,7 @@ export default function Home() {
   const [user, setUser] = useState<string | null>(null);
   const [tab, setTab] = useState<"vote" | "results">("vote");
   const [dishes, setDishes] = useState<Dish[]>([]);
-  const [votes, setVotes] = useState<VotesState>(() =>
-    JSON.parse(localStorage.getItem("votes") || "{}")
-  );
+  const [votes, setVotes] = useState<VotesState>({});
   const router = useRouter()
 
   const getData = async () => {
@@ -22,10 +20,21 @@ export default function Home() {
     setDishes(response.data)
   }
   useEffect(() => {
-    const users = localStorage.getItem("userEmail");
-    setUser(users)
-    getData()
+    if (typeof window !== "undefined") {
+      const storedVotes = localStorage.getItem("votes");
+      const storedUser = localStorage.getItem("userEmail");
+
+      if (storedVotes) {
+        setVotes(JSON.parse(storedVotes));
+      }
+
+      if (storedUser) {
+        setUser(storedUser);
+      }
+    }
+    getData();
   }, []);
+
 
 
 
@@ -48,7 +57,6 @@ export default function Home() {
       } else {
         delete userVotes[dishId];
       }
-      toast.info("Rank Updated Suceesfully")
       return { ...prev, [user]: userVotes };
     });
   };
@@ -59,7 +67,7 @@ export default function Home() {
     router.push('/login')
     toast.info('Logout Successfuly')
   }
-  
+
   return (
     <div className="p-5">
       <div className="flex justify-between p-5">
