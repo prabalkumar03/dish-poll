@@ -16,9 +16,18 @@ export default function Home() {
   const router = useRouter()
 
   const getData = async () => {
-    const response = await axios.get(`https://raw.githubusercontent.com/syook/react-dishpoll/main/db.json`)
-    setDishes(response.data)
-  }
+    try {
+      const response = await axios.get(
+        "https://raw.githubusercontent.com/syook/react-dishpoll/main/db.json"
+      );
+
+      setDishes(response.data);
+    } catch (error) {
+      console.error("Failed to fetch dishes:", error);
+      toast.error("Failed to load dishes. Please Refresh the page again.");
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedVotes = localStorage.getItem("votes");
